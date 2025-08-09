@@ -22,11 +22,12 @@ HOME_ASSISTANT_TOKEN=${HA_TOKEN}
 TTS_PREFIX=${TTS_PREFIX}
 EOF
 
-EXTRAS=$(jq -r '.extra_env // {} | to_entries[]? | "\(.key)=\(.value)"' $CONFIG_PATH || true)
-if [ -n "${EXTRAS}" ]; then
-  while IFS= read -r line; do
-    echo "$line" >> "${APP_DIR}/.env"
-  done <<< "${EXTRAS}"
-fi
+# extra_env is a list of "KEY=VALUE" strings
+jq -r '.extra_env[]? // empty' "$CONFIG_PATH" | while read -r kv; do
+  # Basic validation: must contain '=' and non-empty KEY
+  if [ -n "$kv" ] && [[ "$kv" == *"="* ]] && [[ "${kv%%=*}" != "" ]]; then
+    echo "$kv" >> "${APP_DIR}/.env"
+  fi
+done
 
 chmod 600 "${APP_DIR}/.env" || true

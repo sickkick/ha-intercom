@@ -1,7 +1,7 @@
 name: Intercom (JoeHogan/ha-intercom)
 slug: ha_intercom
 description: Run the ha-intercom FFmpeg/Node intercom server with Home Assistant Ingress.
-version: 0.1.0
+version: 0.1.1
 stage: experimental
 url: https://github.com/JoeHogan/ha-intercom
 arch:
@@ -34,7 +34,7 @@ options:
   ha_url: "http://supervisor/core"
   ha_token: ""
   tts_prefix: "say"
-  extra_env: {}
+  extra_env: []
 schema:
   host: str
   port: int
@@ -43,4 +43,5 @@ schema:
   ha_url: str
   ha_token: str
   tts_prefix: str
-  extra_env: dict
+  extra_env:
+    - str
