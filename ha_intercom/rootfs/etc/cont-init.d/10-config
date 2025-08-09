@@ -19,10 +19,11 @@ tts_prefix=$(bashio::config 'tts_prefix')
   echo "HOME_ASSISTANT_URL=${ha_url}"
   echo "HOME_ASSISTANT_TOKEN=${ha_token}"
   echo "TTS_PREFIX=${tts_prefix}"
-  # extra_env is list[str], write as-is
-  for kv in $(bashio::config 'extra_env[]' || true); do
-    echo "${kv}"
-  done
 } > "${APP_DIR}/.env"
+
+# extra_env is list(str); write each non-empty line
+while read -r kv; do
+  [ -n "$kv" ] && echo "$kv" >> "${APP_DIR}/.env"
+done < <(bashio::config 'extra_env[]' || true)
 
 chmod 600 "${APP_DIR}/.env" || true
