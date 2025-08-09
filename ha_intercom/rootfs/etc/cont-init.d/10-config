@@ -1,33 +1,27 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 set -euo pipefail
 
 CONFIG_PATH=/data/options.json
 APP_DIR=/opt/app
 
-HOST=$(jq -r '.host' $CONFIG_PATH)
-PORT=$(jq -r '.port' $CONFIG_PATH)
-WHISPER_HOST=$(jq -r '.whisper_host' $CONFIG_PATH)
-WHISPER_PORT=$(jq -r '.whisper_port' $CONFIG_PATH)
-HA_URL=$(jq -r '.ha_url' $CONFIG_PATH)
-HA_TOKEN=$(jq -r '.ha_token' $CONFIG_PATH)
-TTS_PREFIX=$(jq -r '.tts_prefix' $CONFIG_PATH)
+HOST=$(jq -r '.host' "$CONFIG_PATH")
+PORT=$(jq -r '.port' "$CONFIG_PATH")
+WHISPER_HOST=$(jq -r '.whisper_host' "$CONFIG_PATH")
+WHISPER_PORT=$(jq -r '.whisper_port' "$CONFIG_PATH")
+HA_URL=$(jq -r '.ha_url' "$CONFIG_PATH")
+HA_TOKEN=$(jq -r '.ha_token' "$CONFIG_PATH")
+TTS_PREFIX=$(jq -r '.tts_prefix' "$CONFIG_PATH")
 
-cat > "${APP_DIR}/.env" <<EOF
-HOST=${HOST}
-PORT=${PORT}
-WHISPER_HOST=${WHISPER_HOST}
-WHISPER_PORT=${WHISPER_PORT}
-HOME_ASSISTANT_URL=${HA_URL}
-HOME_ASSISTANT_TOKEN=${HA_TOKEN}
-TTS_PREFIX=${TTS_PREFIX}
-EOF
-
-# extra_env is a list of "KEY=VALUE" strings
-jq -r '.extra_env[]? // empty' "$CONFIG_PATH" | while read -r kv; do
-  # Basic validation: must contain '=' and non-empty KEY
-  if [ -n "$kv" ] && [[ "$kv" == *"="* ]] && [[ "${kv%%=*}" != "" ]]; then
-    echo "$kv" >> "${APP_DIR}/.env"
-  fi
-done
+{
+  echo "HOST=${HOST}"
+  echo "PORT=${PORT}"
+  echo "WHISPER_HOST=${WHISPER_HOST}"
+  echo "WHISPER_PORT=${WHISPER_PORT}"
+  echo "HOME_ASSISTANT_URL=${HA_URL}"
+  echo "HOME_ASSISTANT_TOKEN=${HA_TOKEN}"
+  echo "TTS_PREFIX=${TTS_PREFIX}"
+  # Append extra_env lines
+  jq -r '.extra_env[]? // empty' "$CONFIG_PATH"
+} > "${APP_DIR}/.env"
 
 chmod 600 "${APP_DIR}/.env" || true

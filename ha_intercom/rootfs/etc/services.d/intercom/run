@@ -1,5 +1,8 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 set -euo pipefail
 cd /opt/app
-export $(grep -v '^#' .env | xargs -d '\n' -I{} echo {})
+# Load env safely
+set -a
+source ./.env || true
+set +a
 exec npm start
