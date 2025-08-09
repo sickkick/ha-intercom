@@ -1,8 +1,7 @@
-#!/command/with-contenv bash
+#!/command/with-contenv bashio
 set -euo pipefail
 cd /opt/app
-# Load env safely
 set -a
-source ./.env || true
+[ -f .env ] && source .env || true
 set +a
 exec npm start

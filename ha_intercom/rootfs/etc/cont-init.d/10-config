@@ -1,27 +1,28 @@
-#!/command/with-contenv bash
+#!/command/with-contenv bashio
 set -euo pipefail
 
-CONFIG_PATH=/data/options.json
 APP_DIR=/opt/app
 
-HOST=$(jq -r '.host' "$CONFIG_PATH")
-PORT=$(jq -r '.port' "$CONFIG_PATH")
-WHISPER_HOST=$(jq -r '.whisper_host' "$CONFIG_PATH")
-WHISPER_PORT=$(jq -r '.whisper_port' "$CONFIG_PATH")
-HA_URL=$(jq -r '.ha_url' "$CONFIG_PATH")
-HA_TOKEN=$(jq -r '.ha_token' "$CONFIG_PATH")
-TTS_PREFIX=$(jq -r '.tts_prefix' "$CONFIG_PATH")
+host=$(bashio::config 'host')
+port=$(bashio::config 'port')
+whisper_host=$(bashio::config 'whisper_host')
+whisper_port=$(bashio::config 'whisper_port')
+ha_url=$(bashio::config 'ha_url')
+ha_token=$(bashio::config 'ha_token')
+tts_prefix=$(bashio::config 'tts_prefix')
 
 {
-  echo "HOST=${HOST}"
-  echo "PORT=${PORT}"
-  echo "WHISPER_HOST=${WHISPER_HOST}"
-  echo "WHISPER_PORT=${WHISPER_PORT}"
-  echo "HOME_ASSISTANT_URL=${HA_URL}"
-  echo "HOME_ASSISTANT_TOKEN=${HA_TOKEN}"
-  echo "TTS_PREFIX=${TTS_PREFIX}"
-  # Append extra_env lines
-  jq -r '.extra_env[]? // empty' "$CONFIG_PATH"
+  echo "HOST=${host}"
+  echo "PORT=${port}"
+  echo "WHISPER_HOST=${whisper_host}"
+  echo "WHISPER_PORT=${whisper_port}"
+  echo "HOME_ASSISTANT_URL=${ha_url}"
+  echo "HOME_ASSISTANT_TOKEN=${ha_token}"
+  echo "TTS_PREFIX=${tts_prefix}"
+  # extra_env is list[str], write as-is
+  for kv in $(bashio::config 'extra_env[]' || true); do
+    echo "${kv}"
+  done
 } > "${APP_DIR}/.env"
 
 chmod 600 "${APP_DIR}/.env" || true

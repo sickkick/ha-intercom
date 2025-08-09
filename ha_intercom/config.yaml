@@ -1,7 +1,7 @@
 name: Intercom (JoeHogan/ha-intercom)
 slug: ha_intercom
 description: Run the ha-intercom FFmpeg/Node intercom server with Home Assistant Ingress.
-version: 0.1.2
+version: 0.1.3
 stage: experimental
 url: https://github.com/JoeHogan/ha-intercom
 arch:
