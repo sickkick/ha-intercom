@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bash
+set -euo pipefail
+cd /opt/app
+export $(grep -v '^#' .env | xargs -d '\n' -I{} echo {})
+exec npm start
